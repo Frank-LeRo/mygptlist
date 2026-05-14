@@ -1,27 +1,11 @@
-const models = [
-  {
-    name: 'GPT-4o',
-    description: 'Multimodales Modell für Text, Bild und Audio.'
-  },
-  {
-    name: 'GPT-4.1',
-    description: 'Stark bei Programmierung und komplexen Aufgaben.'
-  },
-  {
-    name: 'GPT-4.1 Mini',
-    description: 'Schnelleres und günstigeres Modell.'
-  },
-  {
-    name: 'o3',
-    description: 'Reasoning-Modell für tiefere Analysen.'
-  },
-  {
-    name: 'o4-mini',
-    description: 'Kompaktes Modell mit hoher Geschwindigkeit.'
-  }
-];
+import { supabase } from '../lib/supabase';
 
-export default function Home() {
+export default async function Home() {
+  const { data: models, error } = await supabase
+    .from('gptlist')
+    .select('model, description')
+    .order('model');
+
   return (
     <main
       style={{
@@ -31,26 +15,80 @@ export default function Home() {
         fontFamily: 'Arial'
       }}
     >
-      <h1 style={{ fontSize: '42px' }}>ChatGPT Sprachmodelle</h1>
-      <p>Übersicht aktueller OpenAI Modelle.</p>
+      <h1 style={{ fontSize: '42px' }}>GPT Liste</h1>
+      <p>Modelle aus der Supabase Datenbank.</p>
 
-      <div style={{ marginTop: '30px' }}>
-        {models.map((model) => (
-          <div
-            key={model.name}
-            style={{
-              background: 'white',
-              borderRadius: '14px',
-              padding: '24px',
-              marginBottom: '18px',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
-            }}
-          >
-            <h2>{model.name}</h2>
-            <p>{model.description}</p>
-          </div>
-        ))}
-      </div>
+      {error && (
+        <div
+          style={{
+            background: '#ffe5e5',
+            color: '#b00020',
+            padding: '16px',
+            borderRadius: '10px',
+            marginTop: '20px'
+          }}
+        >
+          Fehler beim Laden der Daten: {error.message}
+        </div>
+      )}
+
+      <table
+        style={{
+          width: '100%',
+          borderCollapse: 'collapse',
+          marginTop: '30px',
+          background: 'white',
+          borderRadius: '14px',
+          overflow: 'hidden',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
+        }}
+      >
+        <thead>
+          <tr style={{ background: '#f4f4f4' }}>
+            <th
+              style={{
+                textAlign: 'left',
+                padding: '16px',
+                borderBottom: '1px solid #ddd'
+              }}
+            >
+              Modell
+            </th>
+            <th
+              style={{
+                textAlign: 'left',
+                padding: '16px',
+                borderBottom: '1px solid #ddd'
+              }}
+            >
+              Beschreibung
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {models?.map((model) => (
+            <tr key={model.model}>
+              <td
+                style={{
+                  padding: '16px',
+                  borderBottom: '1px solid #eee',
+                  fontWeight: 'bold'
+                }}
+              >
+                {model.model}
+              </td>
+              <td
+                style={{
+                  padding: '16px',
+                  borderBottom: '1px solid #eee'
+                }}
+              >
+                {model.description}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </main>
   );
 }
