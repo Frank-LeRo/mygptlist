@@ -79,9 +79,28 @@ export default function Home() {
           backgroundImage:
             "linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('/images/pole-dance-bg.jpg')",
           backgroundSize: 'cover',
-          backgroundPosition: 'center'
+          backgroundPosition: 'center',
+          position: 'relative'
         }}
       >
+        <button
+          onClick={toggleLanguage}
+          style={{
+            position: 'absolute',
+            top: '24px',
+            right: '24px',
+            padding: '12px 20px',
+            borderRadius: '10px',
+            border: 'none',
+            background: '#111',
+            color: '#fff',
+            cursor: 'pointer',
+            zIndex: 10
+          }}
+        >
+          {t.switchLanguage}
+        </button>
+
         <aside
           style={{
             width: '260px',
@@ -171,20 +190,6 @@ export default function Home() {
                 flexWrap: 'wrap'
               }}
             >
-              <button
-                onClick={toggleLanguage}
-                style={{
-                  padding: '12px 20px',
-                  borderRadius: '10px',
-                  border: 'none',
-                  background: '#111',
-                  color: '#fff',
-                  cursor: 'pointer'
-                }}
-              >
-                {t.switchLanguage}
-              </button>
-
               {!user ? (
                 <button
                   onClick={signInWithGoogle}
