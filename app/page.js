@@ -160,19 +160,34 @@ export default function Home() {
               gap: '14px'
             }}
           >
-            <Link
-              href="/gptliste"
-              style={{
-                color: '#fff',
-                textDecoration: 'none',
-                padding: '14px 18px',
-                borderRadius: '10px',
-                background: 'rgba(255,255,255,0.12)',
-                fontWeight: 'bold'
-              }}
-            >
-              {t.gptList}
-            </Link>
+            {user ? (
+              <Link
+                href="/gptliste"
+                style={{
+                  color: '#fff',
+                  textDecoration: 'none',
+                  padding: '14px 18px',
+                  borderRadius: '10px',
+                  background: 'rgba(255,255,255,0.12)',
+                  fontWeight: 'bold'
+                }}
+              >
+                {t.gptList}
+              </Link>
+            ) : (
+              <div
+                style={{
+                  color: 'rgba(255,255,255,0.45)',
+                  padding: '14px 18px',
+                  borderRadius: '10px',
+                  background: 'rgba(255,255,255,0.06)',
+                  fontWeight: 'bold',
+                  cursor: 'not-allowed'
+                }}
+              >
+                {t.gptList}
+              </div>
+            )}
           </nav>
         </aside>
 
