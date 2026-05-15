@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { supabase } from '../lib/supabase';
 import { translations } from '../lib/translations';
 
 export default function Home() {
@@ -11,6 +12,12 @@ export default function Home() {
 
   const toggleLanguage = () => {
     setLanguage(language === 'de' ? 'en' : 'de');
+  };
+
+  const signInWithGoogle = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: 'google'
+    });
   };
 
   return (
@@ -72,7 +79,7 @@ export default function Home() {
           padding: '40px'
         }}
       >
-        <div style={{ maxWidth: '700px' }}>
+        <div style={{ maxWidth: '700px', textAlign: 'center' }}>
           <h1 style={{ fontSize: '56px', marginBottom: '20px' }}>
             {t.title}
           </h1>
@@ -81,20 +88,44 @@ export default function Home() {
             {t.subtitle}
           </p>
 
-          <button
-            onClick={toggleLanguage}
+          <div
             style={{
+              display: 'flex',
+              gap: '16px',
+              justifyContent: 'center',
               marginTop: '30px',
-              padding: '12px 20px',
-              borderRadius: '10px',
-              border: 'none',
-              background: '#111',
-              color: '#fff',
-              cursor: 'pointer'
+              flexWrap: 'wrap'
             }}
           >
-            {t.switchLanguage}
-          </button>
+            <button
+              onClick={toggleLanguage}
+              style={{
+                padding: '12px 20px',
+                borderRadius: '10px',
+                border: 'none',
+                background: '#111',
+                color: '#fff',
+                cursor: 'pointer'
+              }}
+            >
+              {t.switchLanguage}
+            </button>
+
+            <button
+              onClick={signInWithGoogle}
+              style={{
+                padding: '12px 20px',
+                borderRadius: '10px',
+                border: 'none',
+                background: '#ffffff',
+                color: '#111',
+                cursor: 'pointer',
+                fontWeight: 'bold'
+              }}
+            >
+              {t.login}
+            </button>
+          </div>
         </div>
       </section>
     </main>
