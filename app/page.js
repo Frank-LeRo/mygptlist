@@ -83,23 +83,62 @@ export default function Home() {
           position: 'relative'
         }}
       >
-        <button
-          onClick={toggleLanguage}
+        <div
           style={{
             position: 'absolute',
             top: '24px',
             right: '24px',
-            padding: '12px 20px',
-            borderRadius: '10px',
-            border: 'none',
-            background: '#111',
-            color: '#fff',
-            cursor: 'pointer',
+            display: 'flex',
+            gap: '12px',
             zIndex: 10
           }}
         >
-          {t.switchLanguage}
-        </button>
+          {!user ? (
+            <button
+              onClick={signInWithGoogle}
+              style={{
+                padding: '12px 20px',
+                borderRadius: '10px',
+                border: 'none',
+                background: '#ffffff',
+                color: '#111',
+                cursor: 'pointer',
+                fontWeight: 'bold'
+              }}
+            >
+              {t.login}
+            </button>
+          ) : (
+            <button
+              onClick={logout}
+              style={{
+                padding: '12px 20px',
+                borderRadius: '10px',
+                border: 'none',
+                background: '#ffffff',
+                color: '#111',
+                cursor: 'pointer',
+                fontWeight: 'bold'
+              }}
+            >
+              Logout
+            </button>
+          )}
+
+          <button
+            onClick={toggleLanguage}
+            style={{
+              padding: '12px 20px',
+              borderRadius: '10px',
+              border: 'none',
+              background: '#111',
+              color: '#fff',
+              cursor: 'pointer'
+            }}
+          >
+            {t.switchLanguage}
+          </button>
+        </div>
 
         <aside
           style={{
@@ -180,48 +219,6 @@ export default function Home() {
                 <p>{user.email}</p>
               </div>
             )}
-
-            <div
-              style={{
-                display: 'flex',
-                gap: '16px',
-                justifyContent: 'center',
-                marginTop: '30px',
-                flexWrap: 'wrap'
-              }}
-            >
-              {!user ? (
-                <button
-                  onClick={signInWithGoogle}
-                  style={{
-                    padding: '12px 20px',
-                    borderRadius: '10px',
-                    border: 'none',
-                    background: '#ffffff',
-                    color: '#111',
-                    cursor: 'pointer',
-                    fontWeight: 'bold'
-                  }}
-                >
-                  {t.login}
-                </button>
-              ) : (
-                <button
-                  onClick={logout}
-                  style={{
-                    padding: '12px 20px',
-                    borderRadius: '10px',
-                    border: 'none',
-                    background: '#ffffff',
-                    color: '#111',
-                    cursor: 'pointer',
-                    fontWeight: 'bold'
-                  }}
-                >
-                  Logout
-                </button>
-              )}
-            </div>
 
             {authError && (
               <div
