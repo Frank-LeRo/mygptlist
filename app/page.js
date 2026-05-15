@@ -7,6 +7,7 @@ import { translations } from '../lib/translations';
 
 export default function Home() {
   const [language, setLanguage] = useState('de');
+  const [authError, setAuthError] = useState('');
 
   const t = translations[language];
 
@@ -15,9 +16,26 @@ export default function Home() {
   };
 
   const signInWithGoogle = async () => {
-    await supabase.auth.signInWithOAuth({
-      provider: 'google'
+    setAuthError('');
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin
+      }
     });
+
+    if (error) {
+      console.error(error);
+
+      if (error.message.includes('provider is not enabled')) {
+        setAuthError(
+          'Google Login ist in Supabase noch nicht aktiviert.'
+        );
+      } else {
+        setAuthError(error.message);
+      }
+    }
   };
 
   return (
@@ -126,6 +144,20 @@ export default function Home() {
               {t.login}
             </button>
           </div>
+
+          {authError && (
+            <div
+              style={{
+                marginTop: '20px',
+                background: 'rgba(255,0,0,0.2)',
+                padding: '14px',
+                borderRadius: '10px',
+                border: '1px solid rgba(255,255,255,0.2)'
+              }}
+            >
+              {authError}
+            </div>
+          )}
         </div>
       </section>
     </main>
