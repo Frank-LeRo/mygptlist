@@ -39,7 +39,7 @@ export default function Home() {
         padding: '40px',
         fontFamily: 'Arial, sans-serif',
         backgroundImage:
-          "linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('/public/pole-dance-bg.jpg')",
+          "linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('/pole-dance-bg.jpg')",
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed'
