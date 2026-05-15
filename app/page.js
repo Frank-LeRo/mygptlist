@@ -1,165 +1,239 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
-import { supabase } from '../lib/supabase';
+import Script from 'next/script';
+import { useEffect, useState } from 'react';
 import { translations } from '../lib/translations';
 
 export default function Home() {
   const [language, setLanguage] = useState('de');
+  const [user, setUser] = useState(null);
   const [authError, setAuthError] = useState('');
 
   const t = translations[language];
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem('google_user');
+
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+  }, []);
 
   const toggleLanguage = () => {
     setLanguage(language === 'de' ? 'en' : 'de');
   };
 
-  const signInWithGoogle = async () => {
-    setAuthError('');
+  const handleGoogleResponse = (response) => {
+    try {
+      const token = response.credential;
+      const payload = JSON.parse(atob(token.split('.')[1]));
 
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: window.location.origin
-      }
-    });
+      const userData = {
+        name: payload.name,
+        email: payload.email,
+        picture: payload.picture
+      };
 
-    if (error) {
+      localStorage.setItem('google_user', JSON.stringify(userData));
+      setUser(userData);
+      setAuthError('');
+    } catch (error) {
       console.error(error);
-
-      if (error.message.includes('provider is not enabled')) {
-        setAuthError(
-          'Google Login ist in Supabase noch nicht aktiviert.'
-        );
-      } else {
-        setAuthError(error.message);
-      }
+      setAuthError('Google Login fehlgeschlagen');
     }
   };
 
+  const signInWithGoogle = () => {
+    if (!window.google) {
+      setAuthError('Google Identity Services wurde nicht geladen');
+      return;
+    }
+
+    window.google.accounts.id.initialize({
+      client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+      callback: handleGoogleResponse
+    });
+
+    window.google.accounts.id.prompt();
+  };
+
+  const logout = () => {
+    localStorage.removeItem('google_user');
+    setUser(null);
+  };
+
   return (
-    <main
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        fontFamily: 'Arial, sans-serif',
-        backgroundImage:
-          "linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('/images/pole-dance-bg.jpg')",
-        backgroundSize: 'cover',
-        backgroundPosition: 'center'
-      }}
-    >
-      <aside
+    <>
+      <Script
+        src="https://accounts.google.com/gsi/client"
+        async
+        defer
+      />
+
+      <main
         style={{
-          width: '260px',
-          background: 'rgba(0,0,0,0.75)',
-          color: '#fff',
-          padding: '30px 20px',
-          backdropFilter: 'blur(6px)'
+          minHeight: '100vh',
+          display: 'flex',
+          fontFamily: 'Arial, sans-serif',
+          backgroundImage:
+            "linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('/images/pole-dance-bg.jpg')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
         }}
       >
-        <h2 style={{ marginBottom: '30px', fontSize: '28px' }}>
-          mygptlist
-        </h2>
-
-        <nav
+        <aside
           style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '14px'
+            width: '260px',
+            background: 'rgba(0,0,0,0.75)',
+            color: '#fff',
+            padding: '30px 20px',
+            backdropFilter: 'blur(6px)'
           }}
         >
-          <Link
-            href="/gptliste"
-            style={{
-              color: '#fff',
-              textDecoration: 'none',
-              padding: '14px 18px',
-              borderRadius: '10px',
-              background: 'rgba(255,255,255,0.12)',
-              fontWeight: 'bold'
-            }}
-          >
-            {t.gptList}
-          </Link>
-        </nav>
-      </aside>
+          <h2 style={{ marginBottom: '30px', fontSize: '28px' }}>
+            mygptlist
+          </h2>
 
-      <section
-        style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          color: '#fff',
-          padding: '40px'
-        }}
-      >
-        <div style={{ maxWidth: '700px', textAlign: 'center' }}>
-          <h1 style={{ fontSize: '56px', marginBottom: '20px' }}>
-            {t.title}
-          </h1>
-
-          <p style={{ fontSize: '20px', lineHeight: '1.6' }}>
-            {t.subtitle}
-          </p>
-
-          <div
+          <nav
             style={{
               display: 'flex',
-              gap: '16px',
-              justifyContent: 'center',
-              marginTop: '30px',
-              flexWrap: 'wrap'
+              flexDirection: 'column',
+              gap: '14px'
             }}
           >
-            <button
-              onClick={toggleLanguage}
+            <Link
+              href="/gptliste"
               style={{
-                padding: '12px 20px',
-                borderRadius: '10px',
-                border: 'none',
-                background: '#111',
                 color: '#fff',
-                cursor: 'pointer'
-              }}
-            >
-              {t.switchLanguage}
-            </button>
-
-            <button
-              onClick={signInWithGoogle}
-              style={{
-                padding: '12px 20px',
+                textDecoration: 'none',
+                padding: '14px 18px',
                 borderRadius: '10px',
-                border: 'none',
-                background: '#ffffff',
-                color: '#111',
-                cursor: 'pointer',
+                background: 'rgba(255,255,255,0.12)',
                 fontWeight: 'bold'
               }}
             >
-              {t.login}
-            </button>
-          </div>
+              {t.gptList}
+            </Link>
+          </nav>
+        </aside>
 
-          {authError && (
+        <section
+          style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            color: '#fff',
+            padding: '40px'
+          }}
+        >
+          <div style={{ maxWidth: '700px', textAlign: 'center' }}>
+            <h1 style={{ fontSize: '56px', marginBottom: '20px' }}>
+              {t.title}
+            </h1>
+
+            <p style={{ fontSize: '20px', lineHeight: '1.6' }}>
+              {t.subtitle}
+            </p>
+
+            {user && (
+              <div
+                style={{
+                  marginTop: '25px',
+                  background: 'rgba(255,255,255,0.12)',
+                  padding: '18px',
+                  borderRadius: '12px'
+                }}
+              >
+                <img
+                  src={user.picture}
+                  alt={user.name}
+                  style={{
+                    width: '64px',
+                    height: '64px',
+                    borderRadius: '50%'
+                  }}
+                />
+
+                <h3>{user.name}</h3>
+                <p>{user.email}</p>
+              </div>
+            )}
+
             <div
               style={{
-                marginTop: '20px',
-                background: 'rgba(255,0,0,0.2)',
-                padding: '14px',
-                borderRadius: '10px',
-                border: '1px solid rgba(255,255,255,0.2)'
+                display: 'flex',
+                gap: '16px',
+                justifyContent: 'center',
+                marginTop: '30px',
+                flexWrap: 'wrap'
               }}
             >
-              {authError}
+              <button
+                onClick={toggleLanguage}
+                style={{
+                  padding: '12px 20px',
+                  borderRadius: '10px',
+                  border: 'none',
+                  background: '#111',
+                  color: '#fff',
+                  cursor: 'pointer'
+                }}
+              >
+                {t.switchLanguage}
+              </button>
+
+              {!user ? (
+                <button
+                  onClick={signInWithGoogle}
+                  style={{
+                    padding: '12px 20px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: '#ffffff',
+                    color: '#111',
+                    cursor: 'pointer',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  {t.login}
+                </button>
+              ) : (
+                <button
+                  onClick={logout}
+                  style={{
+                    padding: '12px 20px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: '#ffffff',
+                    color: '#111',
+                    cursor: 'pointer',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  Logout
+                </button>
+              )}
             </div>
-          )}
-        </div>
-      </section>
-    </main>
+
+            {authError && (
+              <div
+                style={{
+                  marginTop: '20px',
+                  background: 'rgba(255,0,0,0.2)',
+                  padding: '14px',
+                  borderRadius: '10px',
+                  border: '1px solid rgba(255,255,255,0.2)'
+                }}
+              >
+                {authError}
+              </div>
+            )}
+          </div>
+        </section>
+      </main>
+    </>
   );
 }
