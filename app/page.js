@@ -79,19 +79,18 @@ export default function Home() {
           backgroundImage:
             "linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('/images/pole-dance-bg.jpg')",
           backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          position: 'relative'
+          backgroundPosition: 'center'
         }}
       >
         <div
           style={{
-            position: 'absolute',
+            position: 'fixed',
             top: '24px',
             right: '24px',
             display: 'flex',
             alignItems: 'center',
             gap: '12px',
-            zIndex: 10
+            zIndex: 99999
           }}
         >
           {user && (
