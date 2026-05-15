@@ -89,10 +89,27 @@ export default function Home() {
             top: '24px',
             right: '24px',
             display: 'flex',
+            alignItems: 'center',
             gap: '12px',
             zIndex: 10
           }}
         >
+          {user && (
+            <img
+              src={user.picture}
+              alt={user.name}
+              title={user.name}
+              style={{
+                width: '46px',
+                height: '46px',
+                borderRadius: '50%',
+                border: '2px solid rgba(255,255,255,0.7)',
+                objectFit: 'cover',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.3)'
+              }}
+            />
+          )}
+
           {!user ? (
             <button
               onClick={signInWithGoogle}
