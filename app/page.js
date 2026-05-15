@@ -1,10 +1,36 @@
-import { supabase } from '../lib/supabase';
+'use client';
 
-export default async function Home() {
-  const { data: models, error } = await supabase
-    .from('gptlist')
-    .select('model, description')
-    .order('model');
+import { useState } from 'react';
+import { supabase } from '../lib/supabase';
+import { translations } from '../lib/translations';
+
+export default function Home() {
+  const [language, setLanguage] = useState('de');
+  const [models, setModels] = useState([]);
+  const [error, setError] = useState(null);
+
+  const t = translations[language];
+
+  useState(() => {
+    async function loadModels() {
+      const { data, error } = await supabase
+        .from('gptlist')
+        .select('model, description')
+        .order('model');
+
+      if (error) {
+        setError(error.message);
+      } else {
+        setModels(data || []);
+      }
+    }
+
+    loadModels();
+  }, []);
+
+  const toggleLanguage = () => {
+    setLanguage(language === 'de' ? 'en' : 'de');
+  };
 
   return (
     <main
@@ -15,8 +41,35 @@ export default async function Home() {
         fontFamily: 'Arial'
       }}
     >
-      <h1 style={{ fontSize: '42px' }}>GPT Liste</h1>
-      <p>Modelle aus der Supabase Datenbank.</p>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}
+      >
+        <div>
+          <h1 style={{ fontSize: '42px', marginBottom: '8px' }}>
+            {t.title}
+          </h1>
+          <p>{t.subtitle}</p>
+        </div>
+
+        <button
+          onClick={toggleLanguage}
+          style={{
+            padding: '10px 18px',
+            borderRadius: '8px',
+            border: 'none',
+            background: '#111',
+            color: '#fff',
+            cursor: 'pointer',
+            height: 'fit-content'
+          }}
+        >
+          {t.switchLanguage}
+        </button>
+      </div>
 
       {error && (
         <div
@@ -28,7 +81,7 @@ export default async function Home() {
             marginTop: '20px'
           }}
         >
-          Fehler beim Laden der Daten: {error.message}
+          {t.error} {error}
         </div>
       )}
 
@@ -52,7 +105,7 @@ export default async function Home() {
                 borderBottom: '1px solid #ddd'
               }}
             >
-              Modell
+              {t.model}
             </th>
             <th
               style={{
@@ -61,12 +114,12 @@ export default async function Home() {
                 borderBottom: '1px solid #ddd'
               }}
             >
-              Beschreibung
+              {t.description}
             </th>
           </tr>
         </thead>
         <tbody>
-          {models?.map((model) => (
+          {models.map((model) => (
             <tr key={model.model}>
               <td
                 style={{
