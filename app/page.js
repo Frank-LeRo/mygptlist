@@ -67,8 +67,7 @@ export default function Home() {
     <>
       <Script
         src="https://accounts.google.com/gsi/client"
-        async
-        defer
+        strategy="afterInteractive"
       />
 
       <main
@@ -90,7 +89,8 @@ export default function Home() {
             display: 'flex',
             alignItems: 'center',
             gap: '12px',
-            zIndex: 99999
+            zIndex: 999999,
+            pointerEvents: 'auto'
           }}
         >
           {user && (
@@ -104,13 +104,15 @@ export default function Home() {
                 borderRadius: '50%',
                 border: '2px solid rgba(255,255,255,0.7)',
                 objectFit: 'cover',
-                boxShadow: '0 2px 10px rgba(0,0,0,0.3)'
+                boxShadow: '0 2px 10px rgba(0,0,0,0.3)',
+                pointerEvents: 'none'
               }}
             />
           )}
 
           {!user ? (
             <button
+              type="button"
               onClick={signInWithGoogle}
               style={{
                 padding: '12px 20px',
@@ -119,13 +121,15 @@ export default function Home() {
                 background: '#ffffff',
                 color: '#111',
                 cursor: 'pointer',
-                fontWeight: 'bold'
+                fontWeight: 'bold',
+                pointerEvents: 'auto'
               }}
             >
               {t.login}
             </button>
           ) : (
             <button
+              type="button"
               onClick={logout}
               style={{
                 padding: '12px 20px',
@@ -134,7 +138,8 @@ export default function Home() {
                 background: '#ffffff',
                 color: '#111',
                 cursor: 'pointer',
-                fontWeight: 'bold'
+                fontWeight: 'bold',
+                pointerEvents: 'auto'
               }}
             >
               Logout
@@ -142,6 +147,7 @@ export default function Home() {
           )}
 
           <button
+            type="button"
             onClick={toggleLanguage}
             style={{
               padding: '12px 20px',
@@ -149,7 +155,8 @@ export default function Home() {
               border: 'none',
               background: '#111',
               color: '#fff',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              pointerEvents: 'auto'
             }}
           >
             {t.switchLanguage}
