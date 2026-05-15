@@ -1,32 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase';
+import Link from 'next/link';
+import { useState } from 'react';
 import { translations } from '../lib/translations';
 
 export default function Home() {
   const [language, setLanguage] = useState('de');
-  const [models, setModels] = useState([]);
-  const [error, setError] = useState(null);
 
   const t = translations[language];
-
-  useEffect(() => {
-    async function loadModels() {
-      const { data, error } = await supabase
-        .from('gptlist')
-        .select('model, description')
-        .order('model');
-
-      if (error) {
-        setError(error.message);
-      } else {
-        setModels(data || []);
-      }
-    }
-
-    loadModels();
-  }, []);
 
   const toggleLanguage = () => {
     setLanguage(language === 'de' ? 'en' : 'de');
@@ -36,125 +17,86 @@ export default function Home() {
     <main
       style={{
         minHeight: '100vh',
-        padding: '40px',
+        display: 'flex',
         fontFamily: 'Arial, sans-serif',
         backgroundImage:
           "linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('/images/pole-dance-bg.jpg')",
         backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundAttachment: 'fixed'
+        backgroundPosition: 'center'
       }}
     >
-      <div
+      <aside
         style={{
-          maxWidth: '1000px',
-          margin: '0 auto'
+          width: '260px',
+          background: 'rgba(0,0,0,0.75)',
+          color: '#fff',
+          padding: '30px 20px',
+          backdropFilter: 'blur(6px)'
         }}
       >
-        <div
+        <h2 style={{ marginBottom: '30px', fontSize: '28px' }}>
+          mygptlist
+        </h2>
+
+        <nav
           style={{
             display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            color: '#fff'
+            flexDirection: 'column',
+            gap: '14px'
           }}
         >
-          <div>
-            <h1 style={{ fontSize: '42px', marginBottom: '8px' }}>
-              {t.title}
-            </h1>
-            <p>{t.subtitle}</p>
-          </div>
+          <Link
+            href="/gptliste"
+            style={{
+              color: '#fff',
+              textDecoration: 'none',
+              padding: '14px 18px',
+              borderRadius: '10px',
+              background: 'rgba(255,255,255,0.12)',
+              fontWeight: 'bold'
+            }}
+          >
+            {t.gptList}
+          </Link>
+        </nav>
+      </aside>
+
+      <section
+        style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          color: '#fff',
+          padding: '40px'
+        }}
+      >
+        <div style={{ maxWidth: '700px' }}>
+          <h1 style={{ fontSize: '56px', marginBottom: '20px' }}>
+            {t.title}
+          </h1>
+
+          <p style={{ fontSize: '20px', lineHeight: '1.6' }}>
+            {t.subtitle}
+          </p>
 
           <button
             onClick={toggleLanguage}
             style={{
-              padding: '10px 18px',
-              borderRadius: '8px',
+              marginTop: '30px',
+              padding: '12px 20px',
+              borderRadius: '10px',
               border: 'none',
               background: '#111',
               color: '#fff',
-              cursor: 'pointer',
-              height: 'fit-content'
+              cursor: 'pointer'
             }}
           >
             {t.switchLanguage}
           </button>
         </div>
-
-        {error && (
-          <div
-            style={{
-              background: '#ffe5e5',
-              color: '#b00020',
-              padding: '16px',
-              borderRadius: '10px',
-              marginTop: '20px'
-            }}
-          >
-            {t.error} {error}
-          </div>
-        )}
-
-        <table
-          style={{
-            width: '100%',
-            borderCollapse: 'collapse',
-            marginTop: '30px',
-            background: 'rgba(255,255,255,0.92)',
-            backdropFilter: 'blur(4px)',
-            borderRadius: '14px',
-            overflow: 'hidden',
-            boxShadow: '0 2px 12px rgba(0,0,0,0.25)'
-          }}
-        >
-          <thead>
-            <tr style={{ background: '#f4f4f4' }}>
-              <th
-                style={{
-                  textAlign: 'left',
-                  padding: '16px',
-                  borderBottom: '1px solid #ddd'
-                }}
-              >
-                {t.model}
-              </th>
-              <th
-                style={{
-                  textAlign: 'left',
-                  padding: '16px',
-                  borderBottom: '1px solid #ddd'
-                }}
-              >
-                {t.description}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {models.map((model) => (
-              <tr key={model.model}>
-                <td
-                  style={{
-                    padding: '16px',
-                    borderBottom: '1px solid #eee',
-                    fontWeight: 'bold'
-                  }}
-                >
-                  {model.model}
-                </td>
-                <td
-                  style={{
-                    padding: '16px',
-                    borderBottom: '1px solid #eee'
-                  }}
-                >
-                  {model.description}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      </section>
     </main>
   );
 }
