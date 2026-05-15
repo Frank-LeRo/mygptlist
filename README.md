@@ -1,11 +1,11 @@
 # MyGPTList
 
-Eine einfache Next.js-Webseite mit einer Liste aktueller ChatGPT-Sprachmodelle.
+Eine einfache Next.js-Webseite mit Google login und Daten in Supabase
 
 ## Entwicklung starten
 
 ```bash
-npm install
+git pull origin main
 npm run dev
 ```
 
