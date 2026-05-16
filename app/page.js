@@ -26,6 +26,11 @@ export default function Home() {
 
   const handleGoogleResponse = (response) => {
     try {
+      if (!response?.credential) {
+        setAuthError('Keine Google-Anmeldedaten empfangen');
+        return;
+      }
+
       const token = response.credential;
       const payload = JSON.parse(atob(token.split('.')[1]));
 
@@ -45,17 +50,44 @@ export default function Home() {
   };
 
   const signInWithGoogle = () => {
-    if (!window.google) {
+    setAuthError('');
+
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+
+    if (!clientId) {
+      setAuthError(
+        'NEXT_PUBLIC_GOOGLE_CLIENT_ID ist nicht gesetzt'
+      );
+      return;
+    }
+
+    if (!window.google || !window.google.accounts) {
       setAuthError('Google Identity Services wurde nicht geladen');
       return;
     }
 
-    window.google.accounts.id.initialize({
-      client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-      callback: handleGoogleResponse
-    });
+    try {
+      window.google.accounts.id.initialize({
+        client_id: clientId,
+        callback: handleGoogleResponse,
+        auto_select: false,
+        cancel_on_tap_outside: false
+      });
 
-    window.google.accounts.id.prompt();
+      window.google.accounts.id.prompt((notification) => {
+        if (
+          notification.isNotDisplayed() ||
+          notification.isSkippedMoment()
+        ) {
+          setAuthError(
+            'Google Popup wurde blockiert oder konnte nicht geöffnet werden'
+          );
+        }
+      });
+    } catch (error) {
+      console.error(error);
+      setAuthError('Google Login konnte nicht gestartet werden');
+    }
   };
 
   const logout = () => {
