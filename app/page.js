@@ -9,6 +9,7 @@ export default function Home() {
   const [language, setLanguage] = useState('de');
   const [user, setUser] = useState(null);
   const [authError, setAuthError] = useState('');
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const t = translations[language];
 
@@ -86,17 +87,12 @@ export default function Home() {
 
   return (
     <>
-      <Script
-        src="https://accounts.google.com/gsi/client"
-        strategy="afterInteractive"
-      />
+      <Script src="https://accounts.google.com/gsi/client" strategy="afterInteractive" />
 
       <main
         style={{
           minHeight: '100vh',
           display: 'flex',
-          flexDirection: 'row',
-          flexWrap: 'wrap',
           fontFamily: 'Arial, sans-serif',
           backgroundImage:
             "linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('/images/pole-dance-bg.jpg')",
@@ -104,122 +100,76 @@ export default function Home() {
           backgroundPosition: 'center'
         }}
       >
-        <div
-          style={{
-            position: 'fixed',
-            top: '16px',
-            right: '16px',
-            display: 'flex',
-            flexWrap: 'wrap',
-            justifyContent: 'flex-end',
-            alignItems: 'center',
-            gap: '10px',
-            zIndex: 9999,
-            maxWidth: '95vw'
-          }}
-        >
-          {!user ? (
-            <button
-              type="button"
-              onClick={signInWithGoogle}
-              style={{
-                padding: '10px 16px',
-                borderRadius: '10px',
-                border: 'none',
-                background: '#ffffff',
-                color: '#111',
-                cursor: 'pointer',
-                fontWeight: 'bold'
-              }}
-            >
-              {t.login}
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={logout}
-              style={{
-                padding: '10px 16px',
-                borderRadius: '10px',
-                border: 'none',
-                background: '#ffffff',
-                color: '#111',
-                cursor: 'pointer',
-                fontWeight: 'bold'
-              }}
-            >
-              Logout
-            </button>
-          )}
-
-          <button
-            type="button"
-            onClick={toggleLanguage}
-            style={{
-              padding: '10px 16px',
-              borderRadius: '10px',
-              border: 'none',
-              background: '#111',
-              color: '#fff',
-              cursor: 'pointer'
-            }}
-          >
-            {t.switchLanguage}
-          </button>
-        </div>
-
         <aside
           style={{
-            width: '100%',
-            maxWidth: '260px',
+            width: menuOpen ? '260px' : '80px',
             minHeight: '100vh',
-            background: 'rgba(0,0,0,0.75)',
+            background: 'rgba(0,0,0,0.8)',
             color: '#fff',
             padding: '24px 18px',
-            backdropFilter: 'blur(6px)',
+            transition: 'width 0.3s ease',
+            overflow: 'hidden',
             boxSizing: 'border-box'
           }}
         >
-          <h2 style={{ marginBottom: '30px', fontSize: '28px' }}>
-            MySports
-          </h2>
-
-          <nav
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
             style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '14px'
+              background: 'transparent',
+              border: 'none',
+              color: '#fff',
+              fontSize: '28px',
+              cursor: 'pointer',
+              marginBottom: '30px'
             }}
           >
-            {user ? (
-              <Link
-                href="/sportkurse"
+            ☰
+          </button>
+
+          {menuOpen && (
+            <>
+              <h2 style={{ marginBottom: '30px', fontSize: '28px' }}>
+                MySports
+              </h2>
+
+              <nav
                 style={{
-                  color: '#fff',
-                  textDecoration: 'none',
-                  padding: '14px 18px',
-                  borderRadius: '10px',
-                  background: 'rgba(255,255,255,0.12)',
-                  fontWeight: 'bold'
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '14px'
                 }}
               >
-                {t.sportCourses}
-              </Link>
-            ) : (
-              <div
-                style={{
-                  color: 'rgba(255,255,255,0.45)',
-                  padding: '14px 18px',
-                  borderRadius: '10px',
-                  background: 'rgba(255,255,255,0.06)',
-                  fontWeight: 'bold',
-                  cursor: 'not-allowed'
-                }}
-              >
-                {t.sportCourses}
-              </div>
-            )}
-          </nav>
+                {user ? (
+                  <Link
+                    href="/sportkurse"
+                    style={{
+                      color: '#fff',
+                      textDecoration: 'none',
+                      padding: '14px 18px',
+                      borderRadius: '10px',
+                      background: 'rgba(255,255,255,0.12)',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    {t.sportCourses}
+                  </Link>
+                ) : (
+                  <div
+                    style={{
+                      color: 'rgba(255,255,255,0.45)',
+                      padding: '14px 18px',
+                      borderRadius: '10px',
+                      background: 'rgba(255,255,255,0.06)',
+                      fontWeight: 'bold',
+                      cursor: 'not-allowed'
+                    }}
+                  >
+                    {t.sportCourses}
+                  </div>
+                )}
+              </nav>
+            </>
+          )}
         </aside>
 
         <section
@@ -235,6 +185,60 @@ export default function Home() {
             minWidth: '300px'
           }}
         >
+          <div
+            style={{
+              position: 'fixed',
+              top: '16px',
+              right: '16px',
+              display: 'flex',
+              gap: '10px'
+            }}
+          >
+            {!user ? (
+              <button
+                onClick={signInWithGoogle}
+                style={{
+                  padding: '10px 16px',
+                  borderRadius: '10px',
+                  border: 'none',
+                  background: '#fff',
+                  cursor: 'pointer',
+                  fontWeight: 'bold'
+                }}
+              >
+                {t.login}
+              </button>
+            ) : (
+              <button
+                onClick={logout}
+                style={{
+                  padding: '10px 16px',
+                  borderRadius: '10px',
+                  border: 'none',
+                  background: '#fff',
+                  cursor: 'pointer',
+                  fontWeight: 'bold'
+                }}
+              >
+                Logout
+              </button>
+            )}
+
+            <button
+              onClick={toggleLanguage}
+              style={{
+                padding: '10px 16px',
+                borderRadius: '10px',
+                border: 'none',
+                background: '#111',
+                color: '#fff',
+                cursor: 'pointer'
+              }}
+            >
+              {t.switchLanguage}
+            </button>
+          </div>
+
           <div style={{ maxWidth: '700px', textAlign: 'center', width: '100%' }}>
             <h1
               style={{
@@ -253,44 +257,6 @@ export default function Home() {
             >
               {t.subtitle}
             </p>
-
-            {user && (
-              <div
-                style={{
-                  marginTop: '25px',
-                  background: 'rgba(255,255,255,0.12)',
-                  padding: '18px',
-                  borderRadius: '12px'
-                }}
-              >
-                <img
-                  src={user.picture}
-                  alt={user.name}
-                  style={{
-                    width: '64px',
-                    height: '64px',
-                    borderRadius: '50%'
-                  }}
-                />
-
-                <h3>{user.name}</h3>
-                <p>{user.email}</p>
-              </div>
-            )}
-
-            {authError && (
-              <div
-                style={{
-                  marginTop: '20px',
-                  background: 'rgba(255,0,0,0.2)',
-                  padding: '14px',
-                  borderRadius: '10px',
-                  border: '1px solid rgba(255,255,255,0.2)'
-                }}
-              >
-                {authError}
-              </div>
-            )}
           </div>
         </section>
       </main>
