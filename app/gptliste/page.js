@@ -54,6 +54,19 @@ export default function GPTListePage() {
           >
             {t.gptList}
           </Link>
+
+          <Link
+            href="/sportkurse"
+            style={{
+              color: '#fff',
+              textDecoration: 'none',
+              padding: '14px 18px',
+              borderRadius: '10px',
+              background: 'rgba(255,255,255,0.05)'
+            }}
+          >
+            {t.sportCourses}
+          </Link>
         </nav>
       </aside>
 
