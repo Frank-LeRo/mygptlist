@@ -1,33 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
-import { supabase } from '../../lib/supabase';
 import { translations } from '../../lib/translations';
 
 export default function GPTListePage() {
   const [language, setLanguage] = useState('de');
-  const [models, setModels] = useState([]);
-  const [error, setError] = useState(null);
 
   const t = translations[language];
-
-  useEffect(() => {
-    async function loadModels() {
-      const { data, error } = await supabase
-        .from('gptlist')
-        .select('model, description')
-        .order('model');
-
-      if (error) {
-        setError(error.message);
-      } else {
-        setModels(data || []);
-      }
-    }
-
-    loadModels();
-  }, []);
 
   const toggleLanguage = () => {
     setLanguage(language === 'de' ? 'en' : 'de');
@@ -112,65 +92,19 @@ export default function GPTListePage() {
           </button>
         </div>
 
-        {error && (
-          <div
-            style={{
-              background: '#ffe5e5',
-              color: '#b00020',
-              padding: '16px',
-              borderRadius: '10px',
-              marginTop: '20px'
-            }}
-          >
-            {t.error} {error}
-          </div>
-        )}
-
-        <table
+        <div
           style={{
-            width: '100%',
-            borderCollapse: 'collapse',
             marginTop: '30px',
             background: '#fff',
+            padding: '24px',
             borderRadius: '14px',
-            overflow: 'hidden',
             boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
           }}
         >
-          <thead>
-            <tr style={{ background: '#f4f4f4' }}>
-              <th style={{ textAlign: 'left', padding: '16px' }}>
-                {t.model}
-              </th>
-              <th style={{ textAlign: 'left', padding: '16px' }}>
-                {t.description}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {models.map((model) => (
-              <tr key={model.model}>
-                <td
-                  style={{
-                    padding: '16px',
-                    borderBottom: '1px solid #eee',
-                    fontWeight: 'bold'
-                  }}
-                >
-                  {model.model}
-                </td>
-                <td
-                  style={{
-                    padding: '16px',
-                    borderBottom: '1px solid #eee'
-                  }}
-                >
-                  {model.description}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+          <p>
+            Der Zugriff auf die Tabelle gptlist wurde aus dem Repository entfernt.
+          </p>
+        </div>
       </section>
     </main>
   );
