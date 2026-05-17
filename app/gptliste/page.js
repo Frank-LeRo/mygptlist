@@ -31,7 +31,7 @@ export default function GPTListePage() {
         }}
       >
         <h2 style={{ marginBottom: '30px', fontSize: '28px' }}>
-          mygptlist
+          MySport
         </h2>
 
         <nav
