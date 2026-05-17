@@ -219,19 +219,6 @@ export default function Home() {
                 {t.sportCourses}
               </div>
             )}
-
-            <Link
-              href="/gptliste"
-              style={{
-                color: '#fff',
-                textDecoration: 'none',
-                padding: '14px 18px',
-                borderRadius: '10px',
-                background: 'rgba(255,255,255,0.08)'
-              }}
-            >
-              {t.gptList}
-            </Link>
           </nav>
         </aside>
 
