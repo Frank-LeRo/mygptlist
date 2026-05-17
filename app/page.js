@@ -55,9 +55,7 @@ export default function Home() {
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
     if (!clientId) {
-      setAuthError(
-        'NEXT_PUBLIC_GOOGLE_CLIENT_ID ist nicht gesetzt'
-      );
+      setAuthError('NEXT_PUBLIC_GOOGLE_CLIENT_ID ist nicht gesetzt');
       return;
     }
 
@@ -74,16 +72,7 @@ export default function Home() {
         cancel_on_tap_outside: false
       });
 
-      window.google.accounts.id.prompt((notification) => {
-        if (
-          notification.isNotDisplayed() ||
-          notification.isSkippedMoment()
-        ) {
-          setAuthError(
-            'Google Popup wurde blockiert oder konnte nicht geöffnet werden'
-          );
-        }
-      });
+      window.google.accounts.id.prompt();
     } catch (error) {
       console.error(error);
       setAuthError('Google Login konnte nicht gestartet werden');
@@ -106,6 +95,8 @@ export default function Home() {
         style={{
           minHeight: '100vh',
           display: 'flex',
+          flexDirection: 'row',
+          flexWrap: 'wrap',
           fontFamily: 'Arial, sans-serif',
           backgroundImage:
             "linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('/images/pole-dance-bg.jpg')",
@@ -116,45 +107,29 @@ export default function Home() {
         <div
           style={{
             position: 'fixed',
-            top: '24px',
-            right: '24px',
+            top: '16px',
+            right: '16px',
             display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'flex-end',
             alignItems: 'center',
-            gap: '12px',
-            zIndex: 999999,
-            pointerEvents: 'auto'
+            gap: '10px',
+            zIndex: 9999,
+            maxWidth: '95vw'
           }}
         >
-          {user && (
-            <img
-              src={user.picture}
-              alt={user.name}
-              title={user.name}
-              style={{
-                width: '46px',
-                height: '46px',
-                borderRadius: '50%',
-                border: '2px solid rgba(255,255,255,0.7)',
-                objectFit: 'cover',
-                boxShadow: '0 2px 10px rgba(0,0,0,0.3)',
-                pointerEvents: 'none'
-              }}
-            />
-          )}
-
           {!user ? (
             <button
               type="button"
               onClick={signInWithGoogle}
               style={{
-                padding: '12px 20px',
+                padding: '10px 16px',
                 borderRadius: '10px',
                 border: 'none',
                 background: '#ffffff',
                 color: '#111',
                 cursor: 'pointer',
-                fontWeight: 'bold',
-                pointerEvents: 'auto'
+                fontWeight: 'bold'
               }}
             >
               {t.login}
@@ -164,14 +139,13 @@ export default function Home() {
               type="button"
               onClick={logout}
               style={{
-                padding: '12px 20px',
+                padding: '10px 16px',
                 borderRadius: '10px',
                 border: 'none',
                 background: '#ffffff',
                 color: '#111',
                 cursor: 'pointer',
-                fontWeight: 'bold',
-                pointerEvents: 'auto'
+                fontWeight: 'bold'
               }}
             >
               Logout
@@ -182,13 +156,12 @@ export default function Home() {
             type="button"
             onClick={toggleLanguage}
             style={{
-              padding: '12px 20px',
+              padding: '10px 16px',
               borderRadius: '10px',
               border: 'none',
               background: '#111',
               color: '#fff',
-              cursor: 'pointer',
-              pointerEvents: 'auto'
+              cursor: 'pointer'
             }}
           >
             {t.switchLanguage}
@@ -197,15 +170,18 @@ export default function Home() {
 
         <aside
           style={{
-            width: '260px',
+            width: '100%',
+            maxWidth: '260px',
+            minHeight: '100vh',
             background: 'rgba(0,0,0,0.75)',
             color: '#fff',
-            padding: '30px 20px',
-            backdropFilter: 'blur(6px)'
+            padding: '24px 18px',
+            backdropFilter: 'blur(6px)',
+            boxSizing: 'border-box'
           }}
         >
           <h2 style={{ marginBottom: '30px', fontSize: '28px' }}>
-            mygptlist
+            MySports
           </h2>
 
           <nav
@@ -217,7 +193,7 @@ export default function Home() {
           >
             {user ? (
               <Link
-                href="/gptliste"
+                href="/sportkurse"
                 style={{
                   color: '#fff',
                   textDecoration: 'none',
@@ -227,7 +203,7 @@ export default function Home() {
                   fontWeight: 'bold'
                 }}
               >
-                {t.gptList}
+                {t.sportCourses}
               </Link>
             ) : (
               <div
@@ -240,9 +216,22 @@ export default function Home() {
                   cursor: 'not-allowed'
                 }}
               >
-                {t.gptList}
+                {t.sportCourses}
               </div>
             )}
+
+            <Link
+              href="/gptliste"
+              style={{
+                color: '#fff',
+                textDecoration: 'none',
+                padding: '14px 18px',
+                borderRadius: '10px',
+                background: 'rgba(255,255,255,0.08)'
+              }}
+            >
+              {t.gptList}
+            </Link>
           </nav>
         </aside>
 
@@ -254,15 +243,27 @@ export default function Home() {
             justifyContent: 'center',
             alignItems: 'center',
             color: '#fff',
-            padding: '40px'
+            padding: '30px 20px',
+            boxSizing: 'border-box',
+            minWidth: '300px'
           }}
         >
-          <div style={{ maxWidth: '700px', textAlign: 'center' }}>
-            <h1 style={{ fontSize: '56px', marginBottom: '20px' }}>
+          <div style={{ maxWidth: '700px', textAlign: 'center', width: '100%' }}>
+            <h1
+              style={{
+                fontSize: 'clamp(36px, 8vw, 56px)',
+                marginBottom: '20px'
+              }}
+            >
               {t.title}
             </h1>
 
-            <p style={{ fontSize: '20px', lineHeight: '1.6' }}>
+            <p
+              style={{
+                fontSize: 'clamp(16px, 4vw, 20px)',
+                lineHeight: '1.6'
+              }}
+            >
               {t.subtitle}
             </p>
 
