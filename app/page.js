@@ -25,6 +25,44 @@ export default function Home() {
     setLanguage(language === 'de' ? 'en' : 'de');
   };
 
+  const logAuthSession = async ({
+    loginTimestamp,
+    logoutTimestamp,
+    userData,
+    sessionId
+  }) => {
+    try {
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+      if (!supabaseUrl || !supabaseAnonKey) {
+        console.error('Supabase Umgebungsvariablen fehlen');
+        return;
+      }
+
+      await fetch(`${supabaseUrl}/rest/v1/auth_session_logs`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: supabaseAnonKey,
+          Authorization: `Bearer ${supabaseAnonKey}`,
+          Prefer: 'return=minimal'
+        },
+        body: JSON.stringify({
+          login_timestamp: loginTimestamp,
+          logout_timestamp: logoutTimestamp,
+          user_name: userData?.name || null,
+          user_mail: userData?.email || null,
+          user_id: userData?.email || null,
+          session_id: sessionId,
+          url: window.location.href
+        })
+      });
+    } catch (error) {
+      console.error('Fehler beim Schreiben des Auth-Logs', error);
+    }
+  };
+
   const signInWithGoogle = () => {
     setAuthError('');
 
@@ -61,15 +99,25 @@ export default function Home() {
             );
 
             const profile = await response.json();
+            const sessionId = crypto.randomUUID();
 
             const userData = {
               name: profile.name,
               email: profile.email,
-              picture: profile.picture
+              picture: profile.picture,
+              sessionId
             };
 
             localStorage.setItem('google_user', JSON.stringify(userData));
             setUser(userData);
+
+            await logAuthSession({
+              loginTimestamp: new Date().toISOString(),
+              logoutTimestamp: null,
+              userData,
+              sessionId
+            });
+
             setAuthError('');
           } catch (error) {
             console.error(error);
@@ -85,7 +133,17 @@ export default function Home() {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    const savedUser = localStorage.getItem('google_user');
+    const parsedUser = savedUser ? JSON.parse(savedUser) : null;
+
+    await logAuthSession({
+      loginTimestamp: null,
+      logoutTimestamp: new Date().toISOString(),
+      userData: parsedUser,
+      sessionId: parsedUser?.sessionId || crypto.randomUUID()
+    });
+
     localStorage.removeItem('google_user');
     setUser(null);
   };
