@@ -40,13 +40,13 @@ export default function Home() {
         return;
       }
 
-      await fetch(`${supabaseUrl}/rest/v1/auth_session_logs`, {
+      const response = await fetch(`${supabaseUrl}/rest/v1/auth_session_logs`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           apikey: supabaseAnonKey,
           Authorization: `Bearer ${supabaseAnonKey}`,
-          Prefer: 'return=minimal'
+          Prefer: 'return=representation'
         },
         body: JSON.stringify({
           login_timestamp: loginTimestamp,
@@ -58,6 +58,11 @@ export default function Home() {
           url: window.location.href
         })
       });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Supabase Auth-Log Fehler:', errorText);
+      }
     } catch (error) {
       console.error('Fehler beim Schreiben des Auth-Logs', error);
     }
