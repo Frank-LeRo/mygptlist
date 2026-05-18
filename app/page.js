@@ -25,31 +25,6 @@ export default function Home() {
     setLanguage(language === 'de' ? 'en' : 'de');
   };
 
-  const handleGoogleResponse = (response) => {
-    try {
-      if (!response?.credential) {
-        setAuthError('Keine Google-Anmeldedaten empfangen');
-        return;
-      }
-
-      const token = response.credential;
-      const payload = JSON.parse(atob(token.split('.')[1]));
-
-      const userData = {
-        name: payload.name,
-        email: payload.email,
-        picture: payload.picture
-      };
-
-      localStorage.setItem('google_user', JSON.stringify(userData));
-      setUser(userData);
-      setAuthError('');
-    } catch (error) {
-      console.error(error);
-      setAuthError('Google Login fehlgeschlagen');
-    }
-  };
-
   const signInWithGoogle = () => {
     setAuthError('');
 
@@ -60,28 +35,50 @@ export default function Home() {
       return;
     }
 
-    if (!window.google?.accounts?.id) {
+    if (!window.google?.accounts?.oauth2) {
       setAuthError('Google Identity Services wurde nicht geladen');
       return;
     }
 
     try {
-      window.google.accounts.id.initialize({
+      const client = window.google.accounts.oauth2.initTokenClient({
         client_id: clientId,
-        callback: handleGoogleResponse,
-        ux_mode: 'popup',
-        auto_select: false
+        scope: 'openid email profile',
+        callback: async (tokenResponse) => {
+          try {
+            if (!tokenResponse?.access_token) {
+              setAuthError('Google Anmeldung fehlgeschlagen');
+              return;
+            }
+
+            const response = await fetch(
+              'https://www.googleapis.com/oauth2/v3/userinfo',
+              {
+                headers: {
+                  Authorization: `Bearer ${tokenResponse.access_token}`
+                }
+              }
+            );
+
+            const profile = await response.json();
+
+            const userData = {
+              name: profile.name,
+              email: profile.email,
+              picture: profile.picture
+            };
+
+            localStorage.setItem('google_user', JSON.stringify(userData));
+            setUser(userData);
+            setAuthError('');
+          } catch (error) {
+            console.error(error);
+            setAuthError('Benutzerdaten konnten nicht geladen werden');
+          }
+        }
       });
 
-      window.google.accounts.id.prompt((notification) => {
-        if (notification.isNotDisplayed()) {
-          setAuthError('Google Popup konnte nicht angezeigt werden');
-        }
-
-        if (notification.isSkippedMoment()) {
-          setAuthError('Google Login wurde übersprungen oder blockiert');
-        }
-      });
+      client.requestAccessToken();
     } catch (error) {
       console.error(error);
       setAuthError('Google Login konnte nicht gestartet werden');
