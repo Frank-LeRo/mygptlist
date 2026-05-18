@@ -60,7 +60,7 @@ export default function Home() {
       return;
     }
 
-    if (!window.google || !window.google.accounts) {
+    if (!window.google?.accounts?.id) {
       setAuthError('Google Identity Services wurde nicht geladen');
       return;
     }
@@ -69,11 +69,19 @@ export default function Home() {
       window.google.accounts.id.initialize({
         client_id: clientId,
         callback: handleGoogleResponse,
-        auto_select: false,
-        cancel_on_tap_outside: false
+        ux_mode: 'popup',
+        auto_select: false
       });
 
-      window.google.accounts.id.prompt();
+      window.google.accounts.id.prompt((notification) => {
+        if (notification.isNotDisplayed()) {
+          setAuthError('Google Popup konnte nicht angezeigt werden');
+        }
+
+        if (notification.isSkippedMoment()) {
+          setAuthError('Google Login wurde übersprungen oder blockiert');
+        }
+      });
     } catch (error) {
       console.error(error);
       setAuthError('Google Login konnte nicht gestartet werden');
@@ -87,7 +95,10 @@ export default function Home() {
 
   return (
     <>
-      <Script src="https://accounts.google.com/gsi/client" strategy="afterInteractive" />
+      <Script
+        src="https://accounts.google.com/gsi/client"
+        strategy="afterInteractive"
+      />
 
       <main
         style={{
@@ -257,6 +268,19 @@ export default function Home() {
             >
               {t.subtitle}
             </p>
+
+            {authError && (
+              <div
+                style={{
+                  marginTop: '24px',
+                  padding: '14px',
+                  borderRadius: '10px',
+                  background: 'rgba(255,0,0,0.25)'
+                }}
+              >
+                {authError}
+              </div>
+            )}
           </div>
         </section>
       </main>
